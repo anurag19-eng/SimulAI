@@ -1,0 +1,546 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --bg: #050B16;
+    --bg-secondary: #0B1120;
+    --card: rgba(15, 23, 42, 0.82);
+    --card-border: rgba(96, 165, 250, 0.14);
+
+    --blue: #3B82F6;
+    --blue-light: #60A5FA;
+    --purple: #7C3AED;
+    --purple-light: #A78BFA;
+
+    --gold: #D9A441;
+
+    --text: #F8FAFC;
+    --muted: #94A3B8;
+    --placeholder: #64748B;
+    --input: rgba(2, 6, 23, 0.68);
+    --border: #1E293B;
+
+    --danger: #FB7185;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    overflow-x: hidden;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: var(--text);
+    background:
+        radial-gradient(circle at 50% 45%, rgba(37, 99, 235, 0.07), transparent 35%),
+        linear-gradient(135deg, #020617 0%, var(--bg) 48%, #080612 100%);
+}
+
+button,
+input {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.background-grid {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.18;
+    background-image:
+        linear-gradient(rgba(148, 163, 184, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.035) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(circle at center, black 0%, transparent 72%);
+}
+
+.background-orb {
+    position: fixed;
+    width: 420px;
+    height: 420px;
+    border-radius: 50%;
+    filter: blur(110px);
+    pointer-events: none;
+    opacity: 0.16;
+    animation: float 12s ease-in-out infinite alternate;
+}
+
+.orb-blue {
+    top: -180px;
+    left: -130px;
+    background: var(--blue);
+}
+
+.orb-purple {
+    right: -170px;
+    bottom: -190px;
+    background: var(--purple);
+    animation-delay: -4s;
+}
+
+.login-page {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 32px 20px;
+    position: relative;
+    z-index: 1;
+}
+
+.login-card {
+    width: min(100%, 440px);
+    padding: 42px 42px 30px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    background:
+        linear-gradient(145deg, rgba(17, 24, 39, 0.92), rgba(8, 15, 29, 0.88));
+    box-shadow:
+        0 28px 80px rgba(0, 0, 0, 0.48),
+        0 0 70px rgba(37, 99, 235, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.035);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    animation: card-enter 0.7s ease-out both;
+}
+
+.login-card::before {
+    content: "";
+    position: absolute;
+    width: 240px;
+    height: 240px;
+    top: -160px;
+    right: -100px;
+    border-radius: 50%;
+    background: rgba(124, 58, 237, 0.16);
+    filter: blur(65px);
+    pointer-events: none;
+}
+
+.login-card::after {
+    content: "";
+    position: absolute;
+    width: 180px;
+    height: 2px;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    background: linear-gradient(90deg, transparent, var(--blue), var(--purple), transparent);
+    opacity: 0.8;
+}
+
+.brand {
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+.logo-wrap {
+    width: 104px;
+    height: 104px;
+    margin: 0 auto 14px;
+    display: grid;
+    place-items: center;
+    position: relative;
+}
+
+.logo-wrap::before {
+    content: "";
+    position: absolute;
+    inset: -9px;
+    border-radius: 50%;
+    background: conic-gradient(
+        from 210deg,
+        transparent 0deg,
+        rgba(59, 130, 246, 0.65) 75deg,
+        rgba(124, 58, 237, 0.75) 170deg,
+        transparent 260deg
+    );
+    filter: blur(10px);
+    opacity: 0.45;
+    animation: logo-glow 5s linear infinite;
+}
+
+.brand-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 8px 22px rgba(59, 130, 246, 0.16));
+}
+
+.brand-name {
+    font-size: 31px;
+    line-height: 1.1;
+    letter-spacing: -1.3px;
+    font-weight: 800;
+}
+
+.brand-name span {
+    background: linear-gradient(120deg, var(--blue-light), var(--purple-light));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.brand-tagline {
+    margin-top: 7px;
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: 0.7px;
+}
+
+.welcome-section {
+    margin: 34px 0 25px;
+    text-align: left;
+    position: relative;
+    z-index: 1;
+}
+
+.welcome-section h1 {
+    min-height: 39px;
+    font-size: 28px;
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: -0.8px;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.welcome-section h1.updating {
+    opacity: 0.65;
+    transform: translateY(-1px);
+}
+
+.welcome-section p {
+    margin-top: 7px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.form-group {
+    margin-bottom: 19px;
+    position: relative;
+    z-index: 1;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #CBD5E1;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.input-wrap {
+    position: relative;
+}
+
+.input-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    width: 19px;
+    height: 19px;
+    transform: translateY(-50%);
+    color: #64748B;
+    pointer-events: none;
+    transition: color 0.2s ease;
+}
+
+.input-icon svg {
+    width: 100%;
+    height: 100%;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.input-wrap:focus-within .input-icon {
+    color: var(--blue-light);
+}
+
+.input-wrap input {
+    width: 100%;
+    height: 52px;
+    padding: 0 48px;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    outline: none;
+    color: var(--text);
+    background: var(--input);
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.input-wrap input::placeholder {
+    color: var(--placeholder);
+}
+
+.input-wrap input:hover {
+    border-color: #334155;
+}
+
+.input-wrap input:focus {
+    border-color: rgba(96, 165, 250, 0.75);
+    background: rgba(2, 6, 23, 0.82);
+    box-shadow:
+        0 0 0 3px rgba(59, 130, 246, 0.09),
+        0 0 22px rgba(59, 130, 246, 0.07);
+}
+
+.input-wrap.has-error input {
+    border-color: rgba(251, 113, 133, 0.7);
+}
+
+.password-toggle {
+    width: 42px;
+    height: 42px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 10px;
+    color: #64748B;
+    background: transparent;
+    transition: color 0.2s ease, background 0.2s ease;
+}
+
+.password-toggle:hover {
+    color: var(--blue-light);
+    background: rgba(59, 130, 246, 0.08);
+}
+
+.password-toggle svg {
+    width: 19px;
+    height: 19px;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.hidden {
+    display: none;
+}
+
+.field-error {
+    display: block;
+    min-height: 0;
+    margin-top: 6px;
+    color: var(--danger);
+    font-size: 11px;
+}
+
+.form-message {
+    min-height: 18px;
+    margin: -3px 0 12px;
+    font-size: 12px;
+    line-height: 1.45;
+    text-align: center;
+}
+
+.form-message.error {
+    color: #FDA4AF;
+}
+
+.form-message.success {
+    color: #86EFAC;
+}
+
+.action-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 11px;
+    position: relative;
+    z-index: 1;
+}
+
+.btn {
+    height: 50px;
+    border-radius: 13px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease,
+        background 0.2s ease;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.btn-primary {
+    border: 1px solid rgba(96, 165, 250, 0.4);
+    color: white;
+    background: linear-gradient(120deg, #2563EB, #4F46E5 55%, #7C3AED);
+    box-shadow: 0 10px 28px rgba(37, 99, 235, 0.2);
+}
+
+.btn-primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow:
+        0 13px 32px rgba(37, 99, 235, 0.3),
+        0 0 22px rgba(124, 58, 237, 0.13);
+}
+
+.btn-secondary {
+    border: 1px solid #334155;
+    color: #CBD5E1;
+    background: rgba(15, 23, 42, 0.55);
+}
+
+.btn-secondary:hover {
+    transform: translateY(-1px);
+    border-color: rgba(96, 165, 250, 0.5);
+    color: white;
+    background: rgba(30, 41, 59, 0.65);
+}
+
+.button-loader {
+    width: 16px;
+    height: 16px;
+    display: none;
+    margin: 0 auto;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+.btn-primary.loading .button-text {
+    display: none;
+}
+
+.btn-primary.loading .button-loader {
+    display: block;
+}
+
+.footer-text {
+    margin-top: 27px;
+    color: #475569;
+    text-align: center;
+    font-size: 10px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+@keyframes card-enter {
+    from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.985);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes logo-glow {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes float {
+    from {
+        transform: translate3d(0, 0, 0);
+    }
+    to {
+        transform: translate3d(35px, 25px, 0);
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 520px) {
+    .login-page {
+        padding: 20px 14px;
+    }
+
+    .login-card {
+        padding: 34px 24px 25px;
+        border-radius: 21px;
+    }
+
+    .logo-wrap {
+        width: 92px;
+        height: 92px;
+    }
+
+    .brand-name {
+        font-size: 28px;
+    }
+
+    .welcome-section {
+        margin-top: 29px;
+    }
+}
+
+@media (max-height: 700px) and (min-width: 521px) {
+    .login-page {
+        padding: 18px;
+    }
+
+    .login-card {
+        padding-top: 28px;
+        padding-bottom: 22px;
+    }
+
+    .logo-wrap {
+        width: 78px;
+        height: 78px;
+        margin-bottom: 9px;
+    }
+
+    .welcome-section {
+        margin: 22px 0 18px;
+    }
+
+    .form-group {
+        margin-bottom: 14px;
+    }
+
+    .footer-text {
+        margin-top: 17px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

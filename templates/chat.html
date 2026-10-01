@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SimulAi | Interview</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
+</head>
+
+<body>
+    <div class="background-orb orb-blue"></div>
+    <div class="background-orb orb-purple"></div>
+    <div class="background-grid"></div>
+
+    <header class="topbar">
+        <a href="/dashboard" class="brand">
+            <div class="brand-logo-wrap">
+                <img src="{{ url_for('static', filename='images/simulai-logo.png') }}"
+                     alt="SimulAi logo"
+                     class="brand-logo">
+            </div>
+            <div class="brand-text">
+                <span class="brand-name">Simul<span>Ai</span></span>
+                <span class="brand-subtitle">AI Virtual Interview Simulator</span>
+            </div>
+        </a>
+
+        <div class="interview-header">
+            <div class="interviewer-status">
+                <span class="status-dot"></span>
+                <span>AI Interviewer</span>
+            </div>
+            <span class="header-divider"></span>
+            <span class="field-name" id="field-name">
+                {{ interview_field|default('IT & Software') }}
+            </span>
+        </div>
+
+        <div class="user-area">
+            <div class="user-avatar">
+                {{ (username|default('U'))[0]|upper }}
+            </div>
+            <span class="header-username">{{ username|default('User') }}</span>
+            <a href="/logout" class="logout-button" aria-label="Logout" title="Logout">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M10 17l5-5-5-5"></path>
+                    <path d="M15 12H3"></path>
+                    <path d="M13 5V3h7v18h-7v-2"></path>
+                </svg>
+            </a>
+        </div>
+    </header>
+
+    <main class="interview-layout">
+        <section class="chat-panel">
+            <div class="chat-panel-header">
+                <div>
+                    <span class="panel-eyebrow">LIVE INTERVIEW</span>
+                    <h1 id="chat-title">AI Interviewer</h1>
+                </div>
+                <div class="question-counter" id="question-counter">
+                    <span class="counter-label">QUESTION</span>
+                    <span id="question-number">01</span>
+                </div>
+            </div>
+
+            <div class="chat-window" id="chat-window" aria-live="polite">
+                <!-- Flask can add the initial interviewer greeting here.
+                     The chat window intentionally starts empty. -->
+                <!-- Future messages are inserted here by chat.js -->
+            </div>
+
+            <div class="chat-composer" id="composer">
+                <form id="chat-form">
+                    <div class="composer-inner">
+                        <button type="button" class="mic-button" id="mic-button"
+                                aria-label="Start voice input" title="Start voice input">
+                            <svg id="mic-icon" viewBox="0 0 24 24" fill="none">
+                                <rect x="8" y="3" width="8" height="12" rx="4"></rect>
+                                <path d="M5 11a7 7 0 0 0 14 0"></path>
+                                <path d="M12 18v3"></path>
+                                <path d="M9 21h6"></path>
+                            </svg>
+                        </button>
+
+                        <textarea
+                            id="message-input"
+                            name="message"
+                            rows="1"
+                            placeholder="Type your answer..."
+                            autocomplete="off"
+                            disabled></textarea>
+
+                        <button type="submit" class="send-button" id="submit-btn" disabled>
+                            <span class="send-text">Send</span>
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M4 12h15"></path>
+                                <path d="M13 6l6 6-6 6"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+                <p class="composer-hint" id="composer-hint">
+                    Upload your CV to begin the interview.
+                </p>
+            </div>
+        </section>
+
+        <aside class="info-panel">
+            <div class="interviewer-card">
+                <div class="interviewer-icon">
+                    <span>AI</span>
+                </div>
+                <div>
+                    <span class="info-label">YOUR INTERVIEWER</span>
+                    <h2 id="side-field-name">{{ interview_field|default('IT & Software') }}</h2>
+                    <div class="online-status">
+                        <span class="status-dot"></span>
+                        Ready
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <span class="info-label">INTERVIEW STATUS</span>
+                <div class="status-box" id="interview-status-box">
+                    <span class="status-icon waiting" id="interview-status-icon">○</span>
+                    <div>
+                        <strong id="interview-status">Waiting for CV</strong>
+                        <span id="interview-status-detail">Upload your CV to begin.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <span class="info-label">HOW IT WORKS</span>
+
+                <div class="step-list">
+                    <div class="step active" id="step-upload">
+                        <span class="step-number">1</span>
+                        <div>
+                            <strong>Upload CV</strong>
+                            <span>Your CV is analyzed for the interview.</span>
+                        </div>
+                    </div>
+
+                    <div class="step" id="step-interview">
+                        <span class="step-number">2</span>
+                        <div>
+                            <strong>Interview</strong>
+                            <span>Answer questions based on your profile.</span>
+                        </div>
+                    </div>
+
+                    <div class="step" id="step-result">
+                        <span class="step-number">3</span>
+                        <div>
+                            <strong>Evaluation</strong>
+                            <span>Receive feedback when the interview ends.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-section tips-section">
+                <span class="info-label">INTERVIEW TIPS</span>
+                <ul>
+                    <li>Answer naturally and clearly.</li>
+                    <li>Use examples from your experience.</li>
+                    <li>Explain your reasoning when appropriate.</li>
+                </ul>
+            </div>
+
+            <div class="info-section cv-upload-section" id="cv-upload-section">
+                <span class="info-label">YOUR CV</span>
+
+                <div class="cv-upload-card">
+                    <div class="upload-icon">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M12 16V4"></path>
+                            <path d="M7.5 8.5L12 4l4.5 4.5"></path>
+                            <path d="M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"></path>
+                        </svg>
+                    </div>
+
+                    <div class="upload-copy">
+                        <strong>Upload or replace your CV</strong>
+                        <span>PDF format recommended</span>
+                    </div>
+
+                    <input type="file" id="cv-file" accept=".pdf,application/pdf" hidden>
+
+                    <button type="button" class="choose-file-button" id="choose-cv-btn">
+                        Choose File
+                    </button>
+
+                    <div class="selected-file" id="selected-file">
+                        <span class="file-icon">PDF</span>
+                        <span id="selected-file-name">No file selected</span>
+                        <button type="button" id="remove-file-btn"
+                                aria-label="Remove selected file">×</button>
+                    </div>
+
+                    <button type="button" class="upload-button" id="upload-cv-btn" disabled>
+                        Upload CV
+                    </button>
+
+                    <div class="upload-progress" id="upload-progress">
+                        <div class="progress-track">
+                            <div class="progress-bar"></div>
+                        </div>
+                        <span id="upload-progress-text">Analyzing your CV...</span>
+                    </div>
+
+                    <p class="cv-status" id="cv-status" aria-live="polite"></p>
+                </div>
+            </div>
+
+            <div class="memory-indicator" id="memory-indicator">
+                <div class="memory-icon">✦</div>
+                <div>
+                    <strong>Interview Memory</strong>
+                    <span>Your performance summary can help personalize future interviews.</span>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Flask can optionally inject previous messages here as JSON. -->
+    <script type="application/json" id="chat-history-data">{{ chat_history|default('[]')|tojson }}</script>
+
+    <!-- Backend can set the selected interviewer ID here. -->
+    <input type="hidden" id="input-message" value="{{ interviewer_id|default('') }}">
+
+    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/cv.js') }}"></script>
+</body>
+</html>
