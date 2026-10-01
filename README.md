@@ -1,4 +1,11 @@
-# SimulAI — AI Virtual Interview Simulator
+# SimulAi — AI Virtual Interview Simulator
+
+![Python](https://img.shields.io/badge/Python-3.x-blue)
+![Flask](https://img.shields.io/badge/Flask-Web%20Framework-black)
+![Google Gemini](https://img.shields.io/badge/Google%20Gemini-API-blue)
+![SQLite](https://img.shields.io/badge/SQLite-Database-lightgrey)
+![JavaScript](https://img.shields.io/badge/JavaScript-Frontend-yellow)
+![Status](https://img.shields.io/badge/Status-Working%20Prototype-orange)
 
 SimulAI is an AI-powered virtual interview simulator built as a **college project**. It uses the Gemini API to simulate role-specific interviews, accepts a candidate's CV in PDF format, stores interview history and candidate memory in SQLite, and supports browser-based voice input and text-to-speech.
 
