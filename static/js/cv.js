@@ -24,15 +24,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const stepInterview = document.getElementById("step-interview");
 
     let selectedCv = null;
+    let uploadInProgress = false;
 
     function setStatus(message, type = "") {
         cvStatus.textContent = message;
         cvStatus.className = "cv-status";
-        if (type) cvStatus.classList.add(type);
+
+        if (type) {
+            cvStatus.classList.add(type);
+        }
     }
 
     function selectFile(file) {
-        if (!file) return;
+        if (!file || uploadInProgress) {
+            return;
+        }
 
         const isPdf =
             file.type === "application/pdf" ||
@@ -40,7 +46,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!isPdf) {
             selectedCv = null;
+            cvFile.value = "";
             selectedFile.classList.remove("visible");
+            selectedFileName.textContent = "No file selected";
             uploadCvBtn.disabled = true;
             setStatus("Please select a PDF CV.", "error");
             return;
@@ -53,35 +61,77 @@ document.addEventListener("DOMContentLoaded", () => {
         setStatus("");
     }
 
-    chooseCvBtn.addEventListener("click", () => cvFile.click());
+    function setUploading(isUploading) {
+        uploadInProgress = isUploading;
+
+        chooseCvBtn.disabled = isUploading;
+        removeFileBtn.disabled = isUploading;
+        uploadCvBtn.disabled = isUploading || !selectedCv;
+
+        uploadCvBtn.textContent = isUploading
+            ? "Uploading..."
+            : "Upload CV";
+
+        if (isUploading) {
+            uploadProgress.classList.add("active");
+        } else {
+            uploadProgress.classList.remove("active");
+        }
+    }
+
+    chooseCvBtn.addEventListener("click", () => {
+        if (!uploadInProgress) {
+            cvFile.click();
+        }
+    });
 
     cvFile.addEventListener("change", () => {
         selectFile(cvFile.files[0]);
     });
 
     removeFileBtn.addEventListener("click", () => {
+        if (uploadInProgress) {
+            return;
+        }
+
         cvFile.value = "";
         selectedCv = null;
+
         selectedFile.classList.remove("visible");
         selectedFileName.textContent = "No file selected";
+
         uploadCvBtn.disabled = true;
         setStatus("");
     });
 
     uploadCvBtn.addEventListener("click", async () => {
-        if (!selectedCv) {
+        if (!selectedCv || uploadInProgress) {
             setStatus("Please select your CV.", "error");
             return;
         }
 
+        // Get the interviewer ID from the hidden field in chat.html.
+        const interviewerInput =
+            document.getElementById("input-message");
+
+        const interviewerId =
+            interviewerInput?.value.trim();
+
+        if (!interviewerId) {
+            setStatus(
+                "Missing interviewer ID. Please return to the dashboard and select an interviewer again.",
+                "error"
+            );
+            return;
+        }
+
+        const uploadedFileName = selectedCv.name;
+
         const formData = new FormData();
         formData.append("cv", selectedCv);
+        formData.append("interviewer_id", interviewerId);
 
-        uploadCvBtn.disabled = true;
-        chooseCvBtn.disabled = true;
-        removeFileBtn.disabled = true;
-        uploadCvBtn.textContent = "Uploading...";
-        uploadProgress.classList.add("active");
+        setUploading(true);
         setStatus("");
 
         try {
@@ -91,6 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             let data = {};
+
             try {
                 data = await response.json();
             } catch {
@@ -98,14 +149,26 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             if (!response.ok) {
-                throw new Error(data.error || "CV upload failed.");
+                throw new Error(
+                    data.error || "CV upload failed."
+                );
             }
 
-            console.log("Extracted CV text:", data.text);
+            if (!data.message) {
+                throw new Error(
+                    "The CV was uploaded, but the opening interview message was not returned."
+                );
+            }
 
-            setStatus("CV uploaded and analyzed successfully.", "success");
+            setStatus(
+                "CV uploaded successfully. Your interview is ready.",
+                "success"
+            );
+
+            // Update the interview status.
             interviewStatus.textContent = "Interview ready";
-            interviewStatusDetail.textContent = "Your CV has been analyzed.";
+            interviewStatusDetail.textContent =
+                "Your CV has been processed.";
             interviewStatusIcon.textContent = "✓";
             interviewStatusIcon.className = "status-icon active";
 
@@ -113,37 +176,44 @@ document.addEventListener("DOMContentLoaded", () => {
             stepUpload.classList.add("complete");
             stepInterview.classList.add("active");
 
-            // Hide the upload interface after successful processing.
-            uploadSection.style.display = "none";
-
-            messageInput.disabled = false;
-            submitBtn.disabled = false;
-            micButton.disabled = false;
-            composerHint.textContent = "You can type your answer or use the microphone.";
-
-            // Let the chat page know the CV is ready.
-            window.dispatchEvent(new CustomEvent("simulai:cv-ready", {
-                detail: {
-                    text: data.text || "",
-                    filename: selectedCv.name
-                }
-            }));
-
-            // If the backend returns an initial interviewer message, display it.
-            if (data.message && typeof window.appendSimulAiMessage === "function") {
-                window.appendSimulAiMessage("model", data.message);
+            // Keep the CV section visible so another CV can be selected later.
+            if (uploadSection) {
+                uploadSection.style.display = "";
             }
+
+            // Send the opening message to chat.js for display and TTS.
+            window.dispatchEvent(
+                new CustomEvent("simulai:cv-ready", {
+                    detail: {
+                        initialMessage: data.message,
+                        text: data.text || "",
+                        filename: uploadedFileName
+                    }
+                })
+            );
+
+            // Clear the selected file so a replacement can be chosen.
+            cvFile.value = "";
+            selectedCv = null;
+            selectedFile.classList.remove("visible");
+            selectedFileName.textContent = "No file selected";
+
+            uploadCvBtn.disabled = true;
+
+            // chat.js activates the interview controls through the event above.
+            composerHint.textContent =
+                "Type your answer or use the microphone.";
 
         } catch (error) {
             console.error("CV upload error:", error);
-            setStatus(error.message || "Something went wrong.", "error");
 
-            uploadCvBtn.disabled = false;
-            chooseCvBtn.disabled = false;
-            removeFileBtn.disabled = false;
+            setStatus(
+                error.message || "Something went wrong.",
+                "error"
+            );
+
         } finally {
-            uploadProgress.classList.remove("active");
-            uploadCvBtn.textContent = "Upload CV";
+            setUploading(false);
         }
     });
 });

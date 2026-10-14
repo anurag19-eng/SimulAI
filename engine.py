@@ -101,6 +101,36 @@ def update_memory_ai(username,interviewer_id):
     except Exception as e:
         print(f"\nSystem memory didnt updated{e}")
 
+def ai_open_res(username,interviewer_id):
+    cv=db.get_resume(username)
+
+    conte_xt=f"[CANDIDATE_CV]\n{cv}"
+
+    candidate_open=[
+        types.Content(
+            role="user",
+            parts=[types.Part.from_text(
+                text="""
+                The candidate's CV has just been uploaded and you have read it. 
+                Begin the interview now: briefly acknowledge that you've reviewed,
+                their CV, then ask them to introduce themselves. Do not ask any
+                CV-specific or technical question yet — save that for after their
+                introduction."""
+            )]
+        )
+    ]
+    response=client.models.generate_content_stream(
+        model="gemini-2.5-flash",
+        contents=candidate_open,
+        config=types.GenerateContentConfig(
+            system_instruction=f"{get_prompt(interviewer_id)}\n\n{conte_xt}",
+            temperature=0.75
+        )
+    )
+    for chunks in response:
+        if chunks.text:
+            yield chunks.text
+
 
 def get_interviewer_res(username,interviewer_id):
 

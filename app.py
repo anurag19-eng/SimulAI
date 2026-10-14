@@ -89,9 +89,7 @@ def upload_cv():
         
     if "cv" not in request.files:
         return jsonify({"error": "No file uploaded"}),400
-
     file=request.files["cv"]
-
     if file.filename=="":
         return jsonify({"error": "No file selected"}),400
 
@@ -107,7 +105,6 @@ def upload_cv():
         UPLOAD_FOLDER,
         f"{user_nm}_{file.filename}"   
     )
-
     file.save(save_path)
 
     pdf=py.open(save_path)
@@ -116,35 +113,21 @@ def upload_cv():
     for txt in pdf:
         extracted_text+=txt.get_text("text", sort=True)
         extracted_text += "\n"
-
     pdf.close()
 
-    db.save_resume(
-        user_nm,
-        save_path,
-        extracted_text
-    )
+    db.save_resume(user_nm,save_path,extracted_text)
 
     opening_res=[]
 
-    for chunks in ai.ai_open_res(
-        user_nm,
-        interviewer_id
-    ):
+    for chunks in ai.ai_open_res(user_nm,interviewer_id):
         opening_res.append(chunks)
 
     opening_msg="".join(opening_res)
 
-    db.save_message(
-        user_nm,
-        interviewer_id,
-        "model",
-        opening_msg
-    )
+    db.save_message(user_nm,interviewer_id,"model",opening_msg)
 
-    return jsonify({
-        "message": opening_msg
-    })
+    return jsonify({"message": opening_msg})
+
 @app.route("/send", methods=["POST"])
 def send():
     if "username" not in session:
